@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { useTable } from 'react-table';
+import { useTable, useSortBy } from 'react-table';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
+import { FaSortDown, FaSortUp, FaSort } from 'react-icons/fa6';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const statusOptions = [
@@ -10,6 +11,12 @@ const statusOptions = [
   { value: 'booked', label: 'Booked' },
 ];
 
+const statusColors = {
+  idea: 'purple',
+  planning: 'lightblue',
+  booked: 'lightpink',
+};
+
 const Table = ({ columns, data, updateData }) => {
   const {
     getTableProps,
@@ -17,11 +24,14 @@ const Table = ({ columns, data, updateData }) => {
     headerGroups,
     rows,
     prepareRow,
-  } = useTable({
-    columns,
-    data,
-    updateData,
-  });
+  } = useTable(
+    {
+      columns,
+      data,
+      updateData,
+    },
+    useSortBy
+  );
 
   const handleCellChange = (e, rowIndex, columnId) => {
     const value = e.target.value;
@@ -34,7 +44,29 @@ const Table = ({ columns, data, updateData }) => {
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+              <th
+                {...column.getHeaderProps(column.getSortByToggleProps())}
+                style={{
+                  cursor: 'pointer',
+                  position: 'relative',
+                  padding: '10px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {column.render('Header')}
+                  <span style={{
+                    marginLeft: '8px',
+                    display: 'flex',
+                    alignItems: 'center'
+                  }}>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? <FaSortDown size={16} className='text-black' />
+                        : <FaSortUp size={16} className='text-black' />
+                      : <FaSort size={16} className='text-black' />}
+                  </span>
+                </div>
+              </th>
             ))}
           </tr>
         ))}
@@ -51,6 +83,20 @@ const Table = ({ columns, data, updateData }) => {
                       options={statusOptions}
                       value={statusOptions.find(option => option.value === cell.value)}
                       onChange={option => updateData(row.index, cell.column.id, option.value)}
+                      styles={{
+                        control: (styles) => ({
+                          ...styles,
+                          backgroundColor: statusColors[cell.value],
+                          color: 'black',
+                          padding: '2px 5px',
+                          border: 'none',
+                          borderRadius: '4px',
+                        }),
+                        singleValue: (styles) => ({
+                          ...styles,
+                          color: 'black',
+                        }),
+                      }}
                     />
                   ) : cell.column.id === 'date' ? (
                     <DatePicker
