@@ -1,0 +1,30 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.cell-container {
+  position: relative;
+}
+
+.editable-input {
+  width: 100%;
+}
+
+.add-row-button {
+  margin-bottom: 10px;
+}
+
+.cell-text {
+  cursor: pointer;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+}
